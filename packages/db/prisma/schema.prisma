@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String          @id         @default(uuid())
+  email      String          @unique
+  role       Role
+  dappOwner  DappOwner?
+  cacheNode  CacheNode?
+}
+
+model DappOwner {
+  id         String     @id
+  dapps      Dapp[]
+  user       User       @relation(fields: [id], references: [id])
+}
+
+model Dapp {
+  id            String   @id   @default(uuid())
+  dappOwnerId   String   
+  dappName      String
+  assets        Asset[]
+  dappOwner     DappOwner     @relation(fields: [dappOwnerId], references: [id])
+}
+
+
+model CacheNode {
+  id             String   @id  
+  location       String
+  rank           Int
+  assets         CacheNodeAsset[] 
+  user           User      @relation(fields: [id], references: [id])
+}
+
+model Asset {
+  id             String   @id   @default(uuid())
+  cdnUrl         String
+  dataHash       String
+  dappId         String
+  active         Boolean  @default(true)
+  dapp           Dapp     @relation(fields: [dappId], references: [id])
+  cacheNodes     CacheNodeAsset[]
+}
+
+model CacheNodeAsset {
+  id             String   @id   @default(uuid())
+  assetId        String   
+  cacheNodeId    String
+  asset          Asset        @relation(fields: [assetId], references: [id])
+  cacheNode      CacheNode    @relation(fields: [cacheNodeId], references: [id])
+}
+
+enum Role {
+  DAPP_OWNER
+  CACHE_NODE
+}
