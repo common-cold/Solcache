@@ -28,8 +28,19 @@ app.post('/api/v1/user', async (req, res) => {
 });
 
 app.get('/api/v1/user', async(req, ress)=> {
+    const userDb = await prismaClient.user.upsert({
+        where: {
+            email: "test@gmail.com",
+        },
+        update:{},
+        create: {
+            email: "test@gmail.com",
+            role: "CACHE_NODE"
+        }
+    });
+
     ress.json({
-        message: "up"
+        userId: userDb.id
     });
 })
 // app.post("/dapp", async (req, res) => {

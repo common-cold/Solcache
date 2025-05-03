@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "devDependencies": {
+    "@repo/typescript-config": "*"
+  },
   "dependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
